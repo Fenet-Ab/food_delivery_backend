@@ -1,0 +1,32 @@
+// prisma/schema.prisma
+
+datasource db {
+  provider = "mongodb"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id       String @id @map("_id") @default(auto()) @db.ObjectId
+  name     String
+  email    String @unique
+  password String
+  role     String @default("user")
+}
+
+model Food {
+  id          String @id @map("_id") @default(auto()) @db.ObjectId
+  name        String
+  description String
+  price       Float
+}
+
+model Order {
+  id       String @id @map("_id") @default(auto()) @db.ObjectId
+  userId   String
+  foodId   String
+  quantity Int
+  status   String @default("pending")
+}
