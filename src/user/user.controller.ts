@@ -43,4 +43,10 @@ export class UserController {
   // remove(@Param('id') id: string) {
   //   return this.userService.remove(+id);
   // }
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Patch(':id/role')
+  updateRole(@Param('id') id: string, @Body('role') role: string) {
+    return this.userService.updateRole(id, role);
+  }
 }

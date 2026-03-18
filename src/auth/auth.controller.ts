@@ -8,9 +8,13 @@ export class AuthController {
         private readonly authService: AuthService
     ) { }
     @Post('register')
-    register(@Body() createUserDto: CreateUserDto) {
+    async register(@Body() createUserDto: CreateUserDto) {
+        const user = await this.authService.register(createUserDto)
         try {
-            return this.authService.register(createUserDto)
+            return {
+                message: "user registered successfully",
+                user: user
+            }
         } catch (error) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST)
         }
