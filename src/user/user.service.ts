@@ -58,26 +58,55 @@ export class UserService {
 
     return user;
   }
+  async updateProfile(userId: string, name?: string, email?: string, image?: string) {
+    const updateData: any = {};
+    if (name) updateData.name = name;
+    if (email) updateData.email = email;
+    if (image) updateData.image = image;
 
-  // findAll() {
-  //   return `This action returns all user`;
-  // }
+    console.log(`Applying update for user ${userId}:`, updateData);
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} user`;
-  // }
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+      select: {
+        name: true,
+        email: true,
+        image: true,
+      },
+    });
+  }
 
-  // update(id: number, updateUserDto: UpdateUserDto) {
-  //   return `This action updates a #${id} user`;
-  // }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} user`;
-  // }
   async updateRole(userId: string, role: string) {
     return this.prisma.user.update({
       where: { id: userId },
       data: { role },
     });
+  }
+  async findProfile(userId: string) {
+    return this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        name: true,
+        email: true,
+        image: true,
+      },
+    });
+  }
+  async deleteProfile(userId: string) {
+    return this.prisma.user.delete({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        image: true,
+        role: true,
+
+      },
+      // message: "profile deleted successfully"
+    })
+
   }
 }

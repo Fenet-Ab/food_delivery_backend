@@ -15,6 +15,7 @@ model User {
   email    String @unique
   password String
   role     String @default("user")
+  image    String?   // 👈 profile image URL
 }
 
 model Food {
