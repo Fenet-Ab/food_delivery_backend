@@ -17,12 +17,16 @@ export class UserController {
   ) { }
 
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin') // Only users with 'admin' role can access this endpoint
-  @Get('admin-data')
-  getAdminData() {
-    return { message: "This is protected data for admins only." };
+  @UseGuards(JwtAuthGuard)
+  @Get('get-all-users')
+  async findAll() {
+    console.log("Admin fetching all users...");
+    const users = await this.userService.findUsers();
+    console.log(`Found ${users.length} users.`);
+    return users;
   }
+
+
 
 
   // }

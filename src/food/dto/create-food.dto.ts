@@ -3,4 +3,5 @@ export class CreateFoodDto {
     description: string;
     price: number;
     image: string;
+    category?: string;
 }

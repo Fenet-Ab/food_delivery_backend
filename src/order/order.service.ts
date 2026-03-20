@@ -72,4 +72,12 @@ export class OrderService {
       orderBy: { createdAt: 'desc' },
     });
   }
+
+  async updateOrderStatus(id: string, status: string) {
+    return this.prisma.order.update({
+      where: { id },
+      data: { status },
+    });
+  }
 }
+

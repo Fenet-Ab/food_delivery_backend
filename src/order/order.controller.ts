@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Request, Patch, Param } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
@@ -27,13 +27,17 @@ export class OrderController {
     return this.orderService.getUserOrders(req.user.id);
   }
 
-  /**
-   * Admin: View all orders across the platform
-   */
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Get('all')
   getAllOrders() {
     return this.orderService.getAllOrders();
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Patch(':id/status') // Changed from @Post to @Patch
+  updateStatus(@Param('id') id: string, @Body('status') status: string) {
+    return this.orderService.updateOrderStatus(id, status);
   }
 }

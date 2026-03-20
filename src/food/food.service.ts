@@ -14,7 +14,8 @@ export class FoodService {
         description: createFoodDto.description,
         price: Number(createFoodDto.price),
         image: createFoodDto.image,
-      } as any, // Cast to any because the Prisma client types may be lagging in the editor
+        category: createFoodDto.category || 'other',
+      } as any,
     });
   }
 
@@ -22,7 +23,7 @@ export class FoodService {
     return this.prisma.food.findMany();
   }
 
-  async updateFood(id: string, updateFoodDto: UpdateFoodDto) {
+  async updateFood(id: string, updateFoodDto: any) {
     return this.prisma.food.update({
       where: {
         id: id,
@@ -32,9 +33,11 @@ export class FoodService {
         ...(updateFoodDto.description && { description: updateFoodDto.description }),
         ...(updateFoodDto.price && { price: Number(updateFoodDto.price) }),
         ...(updateFoodDto.image && { image: updateFoodDto.image }),
+        ...(updateFoodDto.category && { category: updateFoodDto.category }),
       } as any,
     });
   }
+
 
   async remove(id: string) {
     return this.prisma.food.delete({

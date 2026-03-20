@@ -8,7 +8,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class UserService {
   constructor(private prisma: PrismaService) { }
    async create(createUserDto: CreateUserDto) {
-    // 🔍 Check if the email already exists
     const existingUser = await this.findByEmail(createUserDto.email);
     if (existingUser) {
       throw new ConflictException('This email is already registered');
@@ -16,12 +15,10 @@ export class UserService {
 
     const hashPassword = await bcrypt.hash(createUserDto.password, 10);
 
-    // Check if any admin exists in the database
     const adminCount = await this.prisma.user.count({
       where: { role: 'admin' }
     });
 
-    // If no admin exists, the next user to register becomes the first admin
     const role = adminCount === 0 ? 'admin' : 'user';
 
     return this.prisma.user.create({
@@ -62,19 +59,18 @@ export class UserService {
     if (email) updateData.email = email;
     if (image) updateData.image = image;
 
-    console.log(`Applying update for user ${userId}:`, updateData);
-
     return this.prisma.user.update({
       where: { id: userId },
       data: updateData,
       select: {
+        id: true,
         name: true,
         email: true,
         image: true,
+        role: true,
       },
     });
   }
-
 
   async updateRole(userId: string, role: string) {
     return this.prisma.user.update({
@@ -86,25 +82,23 @@ export class UserService {
     return this.prisma.user.findUnique({
       where: { id: userId },
       select: {
+        id: true,
         name: true,
         email: true,
         image: true,
+        role: true,
       },
     });
   }
   async deleteProfile(userId: string) {
     return this.prisma.user.delete({
       where: { id: userId },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        image: true,
-        role: true,
+    });
+  }
 
-      },
-      // message: "profile deleted successfully"
-    })
-
+  async findUsers() {
+    return this.prisma.user.findMany({
+      select: { id: true, name: true, email: true, role: true, image: true },
+    });
   }
 }

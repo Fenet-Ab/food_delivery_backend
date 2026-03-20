@@ -21,8 +21,9 @@ export class FoodController {
   @UseInterceptors(FileInterceptor('image'))
   async create(
     @Body() createFoodDto: CreateFoodDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
+    console.log("Admin creating food:", createFoodDto);
     let imageUrl = '';
     if (file) {
       const result: any = await this.cloudinaryService.uploadImage(file);
