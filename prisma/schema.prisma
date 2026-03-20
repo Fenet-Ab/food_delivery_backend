@@ -10,25 +10,46 @@ generator client {
 }
 
 model User {
-  id       String @id @map("_id") @default(auto()) @db.ObjectId
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
   name     String
-  email    String @unique
+  email    String  @unique
   password String
-  role     String @default("user")
-  image    String?   // 👈 profile image URL
+  role     String  @default("user")
+  image    String?
+
+  orders Order[]
 }
 
 model Food {
-  id          String @id @map("_id") @default(auto()) @db.ObjectId
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String
   price       Float
+  image       String?
 }
 
 model Order {
-  id       String @id @map("_id") @default(auto()) @db.ObjectId
-  userId   String
-  foodId   String
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+
+  total  Float
+  status String @default("pending")
+  tx_ref    String?  // ✅ ADD THIS
+
+  items OrderItem[]
+
+  createdAt DateTime @default(now())
+}
+
+model OrderItem {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  orderId String @db.ObjectId
+  order   Order  @relation(fields: [orderId], references: [id])
+
+  foodId   String @db.ObjectId
+  name     String
+  price    Float
   quantity Int
-  status   String @default("pending")
+  image    String?
 }

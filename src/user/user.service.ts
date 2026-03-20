@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { CreateUserDto, LoginUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
@@ -7,7 +7,13 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) { }
-  async create(createUserDto: CreateUserDto) {
+   async create(createUserDto: CreateUserDto) {
+    // 🔍 Check if the email already exists
+    const existingUser = await this.findByEmail(createUserDto.email);
+    if (existingUser) {
+      throw new ConflictException('This email is already registered');
+    }
+
     const hashPassword = await bcrypt.hash(createUserDto.password, 10);
 
     // Check if any admin exists in the database
@@ -17,10 +23,6 @@ export class UserService {
 
     // If no admin exists, the next user to register becomes the first admin
     const role = adminCount === 0 ? 'admin' : 'user';
-
-    console.log(`Admin count found: ${adminCount}`);
-    console.log(`Assigning role: ${role}`);
-
 
     return this.prisma.user.create({
       data: {
@@ -40,20 +42,16 @@ export class UserService {
     })
   }
   async login(loginUserDto: LoginUserDto) {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        email: loginUserDto.email,
-      }
-    });
+    const user = await this.findByEmail(loginUserDto.email);
 
     if (!user) {
-      throw new Error("Invalid email");
+      throw new UnauthorizedException('Invalid email or password');
     }
 
     const isPasswordValid = await bcrypt.compare(loginUserDto.password, user.password);
 
     if (!isPasswordValid) {
-      throw new Error("Invalid password");
+      throw new UnauthorizedException('Invalid email or password');
     }
 
     return user;

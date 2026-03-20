@@ -1,4 +1,4 @@
-import { Body, Controller, HttpException, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto, LoginUserDto } from 'src/user/dto/create-user.dto';
 
@@ -7,25 +7,22 @@ export class AuthController {
     constructor(
         private readonly authService: AuthService
     ) { }
+
     @Post('register')
     async register(@Body() createUserDto: CreateUserDto) {
-        const user = await this.authService.register(createUserDto)
-        try {
-            return {
-                message: "user registered successfully",
-                user: user
-            }
-        } catch (error) {
-            throw new HttpException(error.message, HttpStatus.BAD_REQUEST)
-        }
-    };
-    @Post('login')
-    async login(@Body() loginUserDto: LoginUserDto) {
-        const token = await this.authService.login(loginUserDto);
+        const result = await this.authService.register(createUserDto);
         return {
-            message: "Login success",
-            token: token.access_token
-        }
+            message: "User registered successfully",
+            ...result
+        };
     }
 
+    @Post('login')
+    async login(@Body() loginUserDto: LoginUserDto) {
+        const result = await this.authService.login(loginUserDto);
+        return {
+            message: "Login success",
+            ...result
+        };
+    }
 }
