@@ -9,7 +9,7 @@ export class PaymentService {
   /**
    * Initializes a Chapa transaction for an order
    */
-  async payForOrder(orderId: string, userId: string, userEmail: string) {
+  async payForOrder(orderId: string, userId: string, userEmail: string, returnUrl?: string) {
     const order = await this.prisma.order.findUnique({
       where: { id: orderId },
       include: { user: true }
@@ -43,8 +43,8 @@ export class PaymentService {
           currency: 'ETB',
           email: userEmail,
           tx_ref,
-          callback_url: 'http://localhost:3000/payment/verify', // Callback which Chapa pings
-          return_url: 'http://localhost:3000/payment/success', // Where user is redirected after payment
+          callback_url: `http://localhost:5000/payment/verify/${tx_ref}`, // Updated to use port 5000 and include tx_ref
+          return_url: returnUrl ? `${returnUrl}` : `http://localhost:5000/payment/verify/${tx_ref}`, // Prioritize frontend return URL if available
         },
         {
           headers: {

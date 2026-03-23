@@ -1,4 +1,4 @@
-import { Controller, Post, Param, Req, UseGuards, Get } from '@nestjs/common';
+import { Controller, Post, Param, Req, UseGuards, Get, Body } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
 
@@ -8,12 +8,17 @@ export class PaymentController {
 
   @UseGuards(JwtAuthGuard)
   @Post('pay/:orderId')
-  async pay(@Param('orderId') orderId: string, @Req() req) {
-    return this.paymentService.payForOrder(orderId, req.user.id, req.user.email);
+  async pay(@Param('orderId') orderId: string, @Body('returnUrl') returnUrl: string, @Req() req) {
+    return this.paymentService.payForOrder(orderId, req.user.id, req.user.email, returnUrl);
   }
 
   @Get('verify/:tx_ref')
   async verify(@Param('tx_ref') tx_ref: string) {
+    return this.paymentService.verifyPayment(tx_ref);
+  }
+
+  @Post('verify/:tx_ref')
+  async verifyPost(@Param('tx_ref') tx_ref: string) {
     return this.paymentService.verifyPayment(tx_ref);
   }
 }

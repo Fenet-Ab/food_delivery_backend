@@ -3,4 +3,6 @@ export class CreateOrderDto {
         foodId: string;
         quantity: number;
     }[];
+    address: string; // 👈 ADD THIS
+    tx_ref?: string; // 👈 ADD THIS
 }

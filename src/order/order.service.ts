@@ -38,6 +38,8 @@ export class OrderService {
       data: {
         userId,
         total,
+        address: dto.address, // 👈 ADD THIS
+        tx_ref: dto.tx_ref, // 👈 ADD THIS
         items: {
           create: orderItems,
         },

@@ -18,6 +18,7 @@ model User {
   image    String?
 
   orders Order[]
+  supportMessages SupportMessage[]
 }
 
 model Food {
@@ -38,6 +39,7 @@ model Order {
   total  Float
   status String @default("pending")
   tx_ref    String?  // ✅ ADD THIS
+  address   String @default("") // 👈 ADD THIS
 
   items OrderItem[]
 
@@ -54,4 +56,15 @@ model OrderItem {
   price    Float
   quantity Int
   image    String?
+}
+
+model SupportMessage {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  subject   String
+  message   String
+  reply     String?  // Admin reply
+  status    String   @default("pending") // pending, replied
+  createdAt DateTime @default(now())
 }
