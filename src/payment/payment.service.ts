@@ -43,8 +43,8 @@ export class PaymentService {
           currency: 'ETB',
           email: userEmail,
           tx_ref,
-          callback_url: `http://localhost:5000/payment/verify/${tx_ref}`, // Updated to use port 5000 and include tx_ref
-          return_url: returnUrl ? `${returnUrl}` : `http://localhost:5000/payment/verify/${tx_ref}`, // Prioritize frontend return URL if available
+          callback_url: `https://food-delivery-backend-8yxi.onrender.com/payment/verify/${tx_ref}`, 
+          return_url: returnUrl ? `${returnUrl}` : `https://food-delivery-backend-8yxi.onrender.com/payment/verify/${tx_ref}`, 
         },
         {
           headers: {
